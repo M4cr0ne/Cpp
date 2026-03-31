@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C++ • INSERTION SORT</title>
+  <style>
+    :root{
+      --bg:#15171b;
+      --bg-soft:#1c2026;
+      --panel:#20252d;
+      --panel-2:#262c36;
+      --line:#343b48;
+      --text:#e8ecf3;
+      --muted:#a8b1c1;
+      --accent:#9b7dff;
+      --accent-2:#c2a8ff;
+      --warn:#ffb86b;
+      --danger:#ff7f7f;
+      --ok:#8fe388;
+      --shadow:0 10px 30px rgba(0,0,0,.28);
+      --mono:"Cascadia Code","Consolas","Courier New",monospace;
+      --sans:"Segoe UI",Arial,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#121418 0%, #171a20 100%);
+      color:var(--text);
+      font-family:var(--sans);
+      line-height:1.65;
+    }
+
+    .page{
+      max-width:1180px;
+      margin:0 auto;
+      padding:28px 22px 60px;
+    }
+
+    .hero{
+      background:linear-gradient(135deg, rgba(155,125,255,.16), rgba(194,168,255,.08));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:34px 28px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::after{
+      content:"INSERTION";
+      position:absolute;
+      right:-34px;
+      bottom:-18px;
+      font-size:72px;
+      font-weight:900;
+      letter-spacing:3px;
+      color:rgba(255,255,255,.04);
+      pointer-events:none;
+    }
+
+    .eyebrow{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(155,125,255,.15);
+      color:#e4dbff;
+      border:1px solid rgba(155,125,255,.32);
+      font-size:.84rem;
+      font-weight:700;
+      letter-spacing:.4px;
+      margin-bottom:14px;
+    }
+
+    h1{
+      font-size:clamp(2rem, 4vw, 3.6rem);
+      line-height:1.08;
+      margin:0 0 14px;
+      letter-spacing:.2px;
+    }
+
+    .lead{
+      max-width:860px;
+      color:var(--muted);
+      font-size:1.08rem;
+      margin:0;
+    }
+
+    .quick-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+      margin-top:22px;
+    }
+
+    .quick-card{
+      background:rgba(28,32,38,.82);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 16px;
+    }
+
+    .quick-card strong{
+      display:block;
+      margin-bottom:6px;
+      color:var(--accent-2);
+      font-size:.95rem;
+    }
+
+    .quick-card span{
+      color:var(--muted);
+      font-size:.96rem;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:280px 1fr;
+      gap:24px;
+      margin-top:24px;
+      align-items:start;
+    }
+
+    .toc{
+      position:sticky;
+      top:18px;
+      background:var(--bg-soft);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .toc h2{
+      margin:0 0 12px;
+      font-size:1rem;
+    }
+
+    .toc a{
+      display:block;
+      color:var(--muted);
+      text-decoration:none;
+      padding:8px 10px;
+      border-radius:10px;
+      margin-bottom:4px;
+      transition:.2s ease;
+      font-size:.95rem;
+    }
+
+    .toc a:hover{
+      background:rgba(155,125,255,.12);
+      color:var(--text);
+    }
+
+    main section{
+      background:var(--bg-soft);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:28px;
+      box-shadow:var(--shadow);
+      margin-bottom:22px;
+    }
+
+    section h2{
+      font-size:1.7rem;
+      margin-top:0;
+      margin-bottom:12px;
+    }
+
+    section h3{
+      margin-top:24px;
+      margin-bottom:10px;
+      color:#e3dcff;
+      font-size:1.15rem;
+    }
+
+    p{margin:0 0 12px}
+    ul,ol{margin:8px 0 14px 22px}
+    li{margin-bottom:7px}
+    .muted{color:var(--muted)}
+
+    .callout{
+      border-left:4px solid var(--accent);
+      background:rgba(155,125,255,.09);
+      padding:14px 16px;
+      border-radius:0 14px 14px 0;
+      margin:16px 0;
+    }
+
+    .warning{
+      border-left-color:var(--danger);
+      background:rgba(255,127,127,.10);
+    }
+
+    .success{
+      border-left-color:var(--ok);
+      background:rgba(143,227,136,.10);
+    }
+
+    .compare{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .compare .box,
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+    }
+
+    .diagram{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+      margin-top:14px;
+    }
+
+    .cells,
+    .sim-cells,
+    .legend{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .cell,
+    .sim-item{
+      width:86px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+      background:#181c22;
+      text-align:center;
+      transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .cell .idx,
+    .sim-item b{
+      display:block;
+      background:#2a3240;
+      color:#d9d0ff;
+      font-size:.82rem;
+      text-align:center;
+      padding:6px;
+      font-family:var(--mono);
+    }
+
+    .cell .val,
+    .sim-item span{
+      display:block;
+      text-align:center;
+      padding:15px 8px;
+      font-weight:700;
+      font-size:1.05rem;
+    }
+
+    .sim-item.current{
+      border-color:var(--accent);
+      box-shadow:0 0 0 2px rgba(155,125,255,.22);
+      transform:translateY(-2px);
+    }
+
+    .sim-item.minimum{
+      border-color:var(--warn);
+      box-shadow:0 0 0 2px rgba(255,184,107,.18);
+    }
+
+    .sim-item.comparing{
+      border-color:#8ec5ff;
+      box-shadow:0 0 0 2px rgba(142,197,255,.16);
+    }
+
+    .sim-item.sorted{
+      border-color:var(--ok);
+      box-shadow:0 0 0 2px rgba(143,227,136,.18);
+    }
+
+    .flow{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .flow-step{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .flow-step .num{
+      display:inline-grid;
+      place-items:center;
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      background:rgba(155,125,255,.16);
+      color:#efe9ff;
+      font-weight:800;
+      margin-bottom:10px;
+    }
+
+    pre{
+      margin:16px 0 0;
+      background:#0d1014;
+      border:1px solid #2b3240;
+      border-radius:16px;
+      padding:18px;
+      overflow:auto;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+    }
+
+    code{font-family:var(--mono); font-size:.96rem}
+
+    .table-wrap{overflow:auto}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:12px;
+      background:var(--panel);
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid var(--line);
+    }
+
+    th,td{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
+      text-align:left;
+    }
+
+    th{
+      background:#2f2c44;
+      color:#f2ecff;
+      font-size:.95rem;
+    }
+
+    tr:last-child td{border-bottom:none}
+
+    .mini-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .badge,
+    .legend-badge{
+      display:inline-block;
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(194,168,255,.16);
+      color:#efe7ff;
+      border:1px solid rgba(194,168,255,.24);
+      font-size:.78rem;
+      font-weight:700;
+      margin-bottom:10px;
+    }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:16px;
+      align-items:center;
+    }
+
+    input[type="number"], input[type="text"], select{
+      background:#11151a;
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      min-width:120px;
+      font:inherit;
+    }
+
+    #arrayInput{min-width:min(100%, 380px)}
+
+    button{
+      background:linear-gradient(180deg,#9b7dff,#8064dd);
+      color:white;
+      border:none;
+      border-radius:12px;
+      padding:10px 14px;
+      font:inherit;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 6px 18px rgba(128,100,221,.28);
+      transition:transform .15s ease, filter .15s ease;
+    }
+
+    button:hover{transform:translateY(-1px); filter:brightness(1.04)}
+    button.secondary{
+      background:#2b3340;
+      box-shadow:none;
+      border:1px solid var(--line);
+    }
+
+    .sim-output{
+      margin-top:14px;
+      background:#12161c;
+      border:1px dashed #3e4757;
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .legend-badge.current{border-color:rgba(155,125,255,.4)}
+    .legend-badge.minimum{border-color:rgba(255,184,107,.45)}
+    .legend-badge.comparing{border-color:rgba(142,197,255,.45)}
+    .legend-badge.sorted{border-color:rgba(143,227,136,.45)}
+
+    .quiz{
+      display:grid;
+      gap:16px;
+      margin-top:14px;
+    }
+
+    .question{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+    }
+
+    .question h4{margin:0 0 10px; font-size:1rem}
+    .question label{display:block; margin:8px 0; cursor:pointer}
+    .result{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:12px;
+      background:#12161c;
+      border:1px solid var(--line);
+      color:var(--muted);
+    }
+
+    .footer-note{
+      text-align:center;
+      color:#8f99aa;
+      margin-top:10px;
+      font-size:.92rem;
+    }
+
+    .steps-inline{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .pill{
+      background:#232938;
+      border:1px solid var(--line);
+      padding:8px 10px;
+      border-radius:999px;
+      color:#d8dff0;
+      font-size:.92rem;
+    }
+
+    @media (max-width: 980px){
+      .layout{grid-template-columns:1fr}
+      .toc{position:relative; top:auto}
+      .quick-grid, .compare, .mini-grid, .flow{grid-template-columns:1fr 1fr}
+    }
+
+    @media (max-width: 640px){
+      body{font-size:15px}
+      .page{padding:16px 12px 40px}
+      .hero, main section, .toc{padding:20px}
+      .quick-grid, .compare, .mini-grid, .flow{grid-template-columns:1fr}
+      .cell, .sim-item{width:72px}
+      .hero::after{font-size:48px; right:-18px; bottom:-10px}
+    }
+  
+    .sim-item.key{
+      border-color:var(--accent);
+      box-shadow:0 0 0 2px rgba(155,125,255,.22);
+      transform:translateY(-2px);
+    }
+
+    .sim-item.insert{
+      border-color:var(--warn);
+      box-shadow:0 0 0 2px rgba(255,184,107,.18);
+    }
+
+    .sim-item.shift{
+      border-color:#8ec5ff;
+      box-shadow:0 0 0 2px rgba(142,197,255,.16);
+    }
+
+    .legend-badge.key{border-color:rgba(155,125,255,.4)}
+    .legend-badge.insert{border-color:rgba(255,184,107,.45)}
+    .legend-badge.shift{border-color:rgba(142,197,255,.45)}
+
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">C++ • Algoritmi di ordinamento</div>
+      <h1>INSERTION SORT</h1>
+      <p class="lead">
+        L'<strong>Insertion Sort</strong> è un algoritmo di ordinamento per confronto che costruisce progressivamente una porzione iniziale già ordinata del vettore. Ad ogni passaggio preleva l'elemento corrente, lo confronta con quelli che lo precedono e lo inserisce nella posizione corretta, spostando verso destra gli elementi maggiori.
+      </p>
+
+      <div class="quick-grid">
+        <div class="quick-card"><strong>Categoria</strong><span>algoritmo di ordinamento per confronto</span></div>
+        <div class="quick-card"><strong>Idea base</strong><span>prende un elemento e lo inserisce nella parte già ordinata</span></div>
+        <div class="quick-card"><strong>Complessità</strong><span><code>O(n)</code> nel caso migliore, <code>O(n²)</code> nel caso peggiore</span></div>
+        <div class="quick-card"><strong>Uso tipico</strong><span>studio degli ordinamenti e casi con pochi dati o dati quasi ordinati</span></div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Indice della pagina</h2>
+        <a href="#idea">1. Idea chiave</a>
+        <a href="#problem">2. Problema che risolve</a>
+        <a href="#mental-model">3. Modello mentale</a>
+        <a href="#procedure">4. Procedimento passo-passo</a>
+        <a href="#pseudocode">5. Pseudocodice</a>
+        <a href="#code">6. Codice C++ commentato</a>
+        <a href="#complexity">7. Complessità e prestazioni</a>
+        <a href="#compare">8. Confronto con altri algoritmi</a>
+        <a href="#mistakes">9. Errori tipici</a>
+        <a href="#simulator">10. Simulatore interattivo</a>
+        <a href="#quiz">11. Mini quiz</a>
+        <a href="#summary">12. Riepilogo</a>
+      </aside>
+
+      <main>
+        <section id="idea">
+          <h2>1. Idea chiave</h2>
+          <p>
+            L'Insertion Sort considera inizialmente ordinato il primo elemento del vettore. Poi, uno alla volta, prende ciascun elemento successivo e lo colloca nel punto corretto della porzione già ordinata.
+          </p>
+          <p>
+            Per riuscirci non cerca il minimo globale come il Selection Sort, ma confronta l'elemento corrente con quelli che lo precedono e sposta verso destra i valori più grandi fino a trovare la posizione giusta.
+          </p>
+          <div class="callout">
+            In sostanza: l'algoritmo non decide quale sarà il prossimo minimo assoluto, ma <strong>inserisce correttamente ogni nuovo elemento</strong> dentro una parte del vettore che risulta già ordinata.
+          </div>
+        </section>
+
+        <section id="problem">
+          <h2>2. Problema che risolve</h2>
+          <p>
+            Anche questo algoritmo serve a ordinare una sequenza di valori, per esempio numeri interi, dal più piccolo al più grande.
+          </p>
+          <div class="mini-grid">
+            <div class="card">
+              <span class="badge">Input</span>
+              <p>Un vettore non ordinato, ad esempio <code>{29, 10, 14, 37, 13}</code>.</p>
+            </div>
+            <div class="card">
+              <span class="badge">Output</span>
+              <p>Lo stesso vettore ordinato in modo crescente: <code>{10, 13, 14, 29, 37}</code>.</p>
+            </div>
+          </div>
+          <div class="callout success">
+            L'Insertion Sort è particolarmente istruttivo perché mostra bene il significato operativo di una porzione già ordinata e fa capire in modo concreto cosa significhi inserire un valore nella posizione corretta.
+          </div>
+        </section>
+
+        <section id="mental-model">
+          <h2>3. Modello mentale</h2>
+          <p>
+            Si può immaginare il vettore come una fila di caselle in cui la parte sinistra viene resa ordinata progressivamente. Ad ogni passaggio si osserva l'elemento successivo, lo si tiene momentaneamente da parte e si fanno scorrere a destra gli elementi più grandi.
+          </p>
+
+          <div class="diagram">
+            <strong>Esempio iniziale:</strong> <code>{29, 10, 14, 37, 13}</code>
+            <div class="cells">
+              <div class="cell"><div class="idx">indice 0</div><div class="val">29</div></div>
+              <div class="cell"><div class="idx">indice 1</div><div class="val">10</div></div>
+              <div class="cell"><div class="idx">indice 2</div><div class="val">14</div></div>
+              <div class="cell"><div class="idx">indice 3</div><div class="val">37</div></div>
+              <div class="cell"><div class="idx">indice 4</div><div class="val">13</div></div>
+            </div>
+          </div>
+
+          <div class="flow">
+            <div class="flow-step">
+              <div class="num">1</div>
+              <strong>Seleziona il valore corrente</strong>
+              <p class="muted">L'elemento in indice <code>i</code> viene memorizzato temporaneamente in una variabile di appoggio.</p>
+            </div>
+            <div class="flow-step">
+              <div class="num">2</div>
+              <strong>Sposta a destra i valori maggiori</strong>
+              <p class="muted">Gli elementi già ordinati, ma maggiori del valore corrente, vengono traslati di una posizione.</p>
+            </div>
+            <div class="flow-step">
+              <div class="num">3</div>
+              <strong>Inserisci nella posizione corretta</strong>
+              <p class="muted">Quando il punto giusto è stato trovato, il valore corrente viene inserito e la parte sinistra torna ordinata.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="procedure">
+          <h2>4. Procedimento passo-passo</h2>
+          <p>Si osservi il comportamento dell'algoritmo sul vettore <code>{29, 10, 14, 37, 13}</code>.</p>
+
+          <h3>Passaggio 1</h3>
+          <p>La parte ordinata iniziale contiene solo <code>29</code>. L'elemento da inserire è <code>10</code>. Poiché <code>29</code> è maggiore di <code>10</code>, viene spostato a destra.</p>
+          <p><strong>Risultato:</strong> <code>{10, 29, 14, 37, 13}</code></p>
+
+          <h3>Passaggio 2</h3>
+          <p>L'elemento da inserire è <code>14</code>. Si confronta con <code>29</code>, che viene spostato a destra; poi si incontra <code>10</code>, che non deve essere spostato. <code>14</code> viene inserito tra <code>10</code> e <code>29</code>.</p>
+          <p><strong>Risultato:</strong> <code>{10, 14, 29, 37, 13}</code></p>
+
+          <h3>Passaggio 3</h3>
+          <p>L'elemento da inserire è <code>37</code>. Poiché non è minore di <code>29</code>, non è necessario alcuno spostamento.</p>
+          <p><strong>Risultato:</strong> <code>{10, 14, 29, 37, 13}</code></p>
+
+          <h3>Passaggio 4</h3>
+          <p>L'elemento da inserire è <code>13</code>. Si spostano a destra <code>37</code>, <code>29</code> e <code>14</code>. Quando si arriva a <code>10</code>, che è minore di <code>13</code>, l'inserimento può avvenire subito dopo.</p>
+          <p><strong>Risultato finale:</strong> <code>{10, 13, 14, 29, 37}</code></p>
+
+          <div class="steps-inline">
+            <span class="pill">Ad ogni passaggio cresce la parte ordinata</span>
+            <span class="pill">L'elemento corrente viene memorizzato in una variabile temporanea</span>
+            <span class="pill">Gli elementi maggiori vengono traslati verso destra</span>
+          </div>
+
+          <div class="callout">
+            Alla fine di ogni iterazione del ciclo esterno la porzione da indice <code>0</code> a indice <code>i</code> risulta ordinata. Questa proprietà è il punto centrale di tutto l'algoritmo.
+          </div>
+        </section>
+
+        <section id="pseudocode">
+          <h2>5. Pseudocodice</h2>
+          <p>Lo pseudocodice seguente mette in evidenza la logica dell'inserimento, senza legarsi ancora ai dettagli sintattici del C++.</p>
+<pre><code>per i da 1 a n - 1
+    key = vettore[i]
+    j = i - 1
+
+    mentre j >= 0 e vettore[j] > key
+        vettore[j + 1] = vettore[j]
+        j = j - 1
+    fine mentre
+
+    vettore[j + 1] = key
+fine per</code></pre>
+          <div class="callout">
+            La variabile <code>key</code> contiene temporaneamente il valore da inserire. Senza questa variabile il valore originale andrebbe perso durante gli spostamenti verso destra.
+          </div>
+        </section>
+
+        <section id="code">
+          <h2>6. Codice C++ commentato</h2>
+          <p>Di seguito è riportata una versione didattica dell'Insertion Sort applicata a un <code>vector&lt;int&gt;</code>.</p>
+<pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+using namespace std;
+
+int main()
+{
+    vector&lt;int&gt; numbers = {29, 10, 14, 37, 13};
+    int n = numbers.size();
+
+    // Outer loop: expands the sorted portion one element at a time
+    for (int i = 1; i &lt; n; i++)
+    {
+        int key = numbers[i];
+        int j = i - 1;
+
+        // Shift greater elements one position to the right
+        while (j &gt;= 0 && numbers[j] &gt; key)
+        {
+            numbers[j + 1] = numbers[j];
+            j--;
+        }
+
+        // Insert the saved value into the correct position
+        numbers[j + 1] = key;
+    }
+
+    cout &lt;&lt; "Sorted vector: ";
+    for (int value : numbers)
+    {
+        cout &lt;&lt; value &lt;&lt; " ";
+    }
+
+    return 0;
+}</code></pre>
+
+          <div class="mini-grid">
+            <div class="card">
+              <span class="badge">Ciclo esterno</span>
+              <p>Parte da indice <code>1</code> perché il primo elemento, da solo, è già ordinato.</p>
+            </div>
+            <div class="card">
+              <span class="badge">Ciclo di spostamento</span>
+              <p>Fa arretrare l'indice <code>j</code> fino a quando gli elementi maggiori del valore da inserire sono stati spostati.</p>
+            </div>
+          </div>
+
+          <h3>Lettura delle variabili principali</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Variabile</th>
+                  <th>Ruolo</th>
+                  <th>Osservazione didattica</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>i</code></td>
+                  <td>Indica l'indice dell'elemento che deve essere inserito.</td>
+                  <td>La parte a sinistra di <code>i</code> è già ordinata.</td>
+                </tr>
+                <tr>
+                  <td><code>key</code></td>
+                  <td>Memorizza il valore che deve essere collocato nel punto corretto.</td>
+                  <td>Evita la perdita del valore durante gli spostamenti.</td>
+                </tr>
+                <tr>
+                  <td><code>j</code></td>
+                  <td>Scorre all'indietro la parte ordinata.</td>
+                  <td>Serve a capire quali elementi devono essere traslati verso destra.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="complexity">
+          <h2>7. Complessità e prestazioni</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Aspetto</th>
+                  <th>Valore</th>
+                  <th>Significato</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Tempo - caso migliore</td>
+                  <td><code>O(n)</code></td>
+                  <td>Se il vettore è già ordinato, ogni elemento richiede solo un controllo.</td>
+                </tr>
+                <tr>
+                  <td>Tempo - caso medio</td>
+                  <td><code>O(n²)</code></td>
+                  <td>In media sono necessari diversi confronti e spostamenti per ciascun elemento.</td>
+                </tr>
+                <tr>
+                  <td>Tempo - caso peggiore</td>
+                  <td><code>O(n²)</code></td>
+                  <td>Nel caso inversamente ordinato, ogni nuovo elemento viene portato fino all'inizio.</td>
+                </tr>
+                <tr>
+                  <td>Spazio extra</td>
+                  <td><code>O(1)</code></td>
+                  <td>Usa soltanto poche variabili aggiuntive.</td>
+                </tr>
+                <tr>
+                  <td>Stabilità</td>
+                  <td>Sì</td>
+                  <td>Gli elementi uguali mantengono il loro ordine relativo se il confronto usa <code>&gt;</code> e non <code>&gt;=</code>.</td>
+                </tr>
+                <tr>
+                  <td>Adattività</td>
+                  <td>Sì</td>
+                  <td>Se i dati sono quasi ordinati, il numero di spostamenti diminuisce sensibilmente.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout">
+            L'Insertion Sort è uno dei pochi algoritmi elementari che migliora davvero quando il vettore è già quasi ordinato. Questo lo rende più interessante del Selection Sort in molti casi piccoli o favorevoli.
+          </div>
+
+          <div class="callout warning">
+            Quando i dati diventano molti, la crescita quadratica del numero di confronti e spostamenti rende preferibili algoritmi più efficienti come Merge Sort, Quick Sort o, in C++ reale, <code>std::sort()</code>.
+          </div>
+        </section>
+
+        <section id="compare">
+          <h2>8. Confronto con altri algoritmi</h2>
+          <p>È utile confrontarlo con gli altri ordinamenti semplici già studiati, perché la logica operativa è diversa pur restando nel gruppo degli algoritmi quadratici.</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Algoritmo</th>
+                  <th>Idea principale</th>
+                  <th>Punto forte</th>
+                  <th>Limite principale</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Selection Sort</td>
+                  <td>Cerca il minimo e lo porta davanti</td>
+                  <td>Pochi scambi e logica lineare</td>
+                  <td>Non sfrutta il fatto che i dati siano quasi ordinati</td>
+                </tr>
+                <tr>
+                  <td>Bubble Sort</td>
+                  <td>Confronta coppie adiacenti e scambia se necessario</td>
+                  <td>Molto visivo</td>
+                  <td>Tende a produrre molti scambi</td>
+                </tr>
+                <tr>
+                  <td>Insertion Sort</td>
+                  <td>Inserisce ogni nuovo elemento nella parte sinistra già ordinata</td>
+                  <td>Si comporta bene su insiemi piccoli o quasi ordinati</td>
+                  <td>Resta quadratico nel caso medio e peggiore</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="compare">
+            <div class="box">
+              <h3>Quando è particolarmente istruttivo</h3>
+              <p>Quando si vuole far capire cosa significhi ordinare senza cercare ogni volta il minimo globale, ma ragionando per inserimento progressivo.</p>
+            </div>
+            <div class="box">
+              <h3>Quando può risultare utile anche in pratica</h3>
+              <p>Quando i dati sono pochi, quando la sequenza è già quasi ordinata o come parte interna di algoritmi più complessi.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="mistakes">
+          <h2>9. Errori tipici</h2>
+
+          <div class="card">
+            <h3>Errore 1 • Dimenticare la variabile <code>key</code></h3>
+            <p>Se il valore da inserire non viene salvato prima degli spostamenti, si perde l'elemento originario.</p>
+          </div>
+
+          <div class="card">
+            <h3>Errore 2 • Scrivere una condizione di confronto sbagliata</h3>
+            <p>Per l'ordinamento crescente occorre spostare gli elementi maggiori di <code>key</code>, quindi la condizione è <code>numbers[j] &gt; key</code>.</p>
+          </div>
+
+          <div class="card">
+            <h3>Errore 3 • Inserire il valore troppo presto</h3>
+            <p>L'inserimento di <code>key</code> deve avvenire solo dopo che tutti i valori maggiori sono stati traslati.</p>
+          </div>
+
+          <div class="card">
+            <h3>Errore 4 • Usare male l'indice <code>j</code> alla fine del ciclo</h3>
+            <p>Dopo il ciclo <code>while</code>, l'inserimento corretto avviene in <code>j + 1</code>, non in <code>j</code>.</p>
+          </div>
+        </section>
+
+        <section id="simulator">
+          <h2>10. Simulatore interattivo</h2>
+          <p>
+            È possibile inserire alcuni numeri separati da virgola e osservare l'Insertion Sort un passaggio alla volta.
+          </p>
+
+          <div class="card">
+            <div class="controls">
+              <input id="arrayInput" type="text" placeholder="Esempio: 29, 10, 14, 37, 13" />
+              <button id="startBtn">Inizializza simulazione</button>
+              <button id="nextBtn">Passo successivo</button>
+              <button id="resetBtn" class="secondary">Carica esempio</button>
+            </div>
+
+            <div class="legend">
+              <span class="legend-badge key">valore da inserire</span>
+              <span class="legend-badge insert">posizione di inserimento</span>
+              <span class="legend-badge shift">elemento spostato o confrontato</span>
+              <span class="legend-badge sorted">parte già ordinata</span>
+            </div>
+
+            <div class="sim-output">
+              <div><strong>Step corrente:</strong> <span id="stepLabel">0 / 0</span></div>
+              <div class="sim-cells" id="simCells"></div>
+              <p class="footer-note" id="simMessage">Occorre inizializzare una simulazione per visualizzare i passaggi.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="quiz">
+          <h2>11. Mini quiz</h2>
+          <p>La sezione consente di verificare se i concetti principali risultano davvero chiari.</p>
+
+          <div class="quiz">
+            <div class="question">
+              <h4>1. Qual è l'idea centrale dell'Insertion Sort?</h4>
+              <label><input type="radio" name="q1" value="1"> Inserire ogni elemento nella posizione corretta della parte già ordinata</label>
+              <label><input type="radio" name="q1" value="0"> Cercare sempre il massimo dell'intero vettore</label>
+              <label><input type="radio" name="q1" value="0"> Dividere il vettore esattamente a metà</label>
+            </div>
+
+            <div class="question">
+              <h4>2. A cosa serve la variabile <code>key</code>?</h4>
+              <label><input type="radio" name="q2" value="1"> A conservare il valore da inserire mentre gli altri elementi vengono spostati</label>
+              <label><input type="radio" name="q2" value="0"> A contare quanti confronti sono stati eseguiti</label>
+              <label><input type="radio" name="q2" value="0"> A memorizzare la dimensione del vettore</label>
+            </div>
+
+            <div class="question">
+              <h4>3. In quale situazione l'Insertion Sort può comportarsi particolarmente bene?</h4>
+              <label><input type="radio" name="q3" value="0"> Quando il vettore è ordinato in senso inverso</label>
+              <label><input type="radio" name="q3" value="1"> Quando il vettore è già ordinato o quasi ordinato</label>
+              <label><input type="radio" name="q3" value="0"> Solo quando tutti i valori sono diversi</label>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button id="quizBtn">Correggi quiz</button>
+          </div>
+          <div class="result" id="quizResult">Nessuna risposta ancora corretta.</div>
+        </section>
+
+        <section id="summary">
+          <h2>12. Riepilogo</h2>
+          <ul>
+            <li>L'Insertion Sort è un algoritmo di ordinamento per confronto.</li>
+            <li>Costruisce progressivamente una parte iniziale già ordinata del vettore.</li>
+            <li>Ogni nuovo elemento viene inserito nel punto corretto tramite confronti e spostamenti verso destra.</li>
+            <li>Lavora in-place e usa pochissima memoria aggiuntiva.</li>
+            <li>È stabile e adattivo.</li>
+            <li>Ha complessità <code>O(n)</code> nel caso migliore e <code>O(n²)</code> nel caso medio e peggiore.</li>
+          </ul>
+
+          <div class="callout success">
+            Quando il meccanismo dell'Insertion Sort risulta chiaro, diventa più semplice capire la differenza tra un algoritmo che cerca ogni volta il minimo globale e uno che costruisce invece l'ordine per inserimenti successivi.
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const defaultData = [29, 10, 14, 37, 13];
+    const arrayInput = document.getElementById('arrayInput');
+    const simCells = document.getElementById('simCells');
+    const simMessage = document.getElementById('simMessage');
+    const stepLabel = document.getElementById('stepLabel');
+
+    let steps = [];
+    let stepIndex = 0;
+
+    function parseInput(raw){
+      return raw
+        .split(',')
+        .map(item => item.trim())
+        .filter(item => item !== '')
+        .map(Number)
+        .filter(item => !Number.isNaN(item));
+    }
+
+    function createState(array, message, keyIndex = -1, insertIndex = -1, comparingIndex = -1, sortedCount = 0){
+      return {
+        array: [...array],
+        message,
+        keyIndex,
+        insertIndex,
+        comparingIndex,
+        sortedCount
+      };
+    }
+
+    function generateInsertionSortSteps(source){
+      const arr = [...source];
+      const generated = [];
+      const n = arr.length;
+
+      generated.push(createState(arr, 'Configurazione iniziale del vettore.', -1, -1, -1, 1));
+
+      for(let i = 1; i < n; i++) {
+        const key = arr[i];
+        let j = i - 1;
+
+        generated.push(createState(arr, `Inizio passaggio ${i}: il valore da inserire è ${key} in indice ${i}.`, i, i, -1, i));
+
+        while(j >= 0 && arr[j] > key) {
+          generated.push(createState(arr, `Confronto ${key} con il valore in indice ${j}. Poiché ${arr[j]} è maggiore, deve essere spostato a destra.`, i, j, j, i));
+          arr[j + 1] = arr[j];
+          generated.push(createState(arr, `Spostamento eseguito: il valore ${arr[j]} occupa ora l'indice ${j + 1}.`, i, j, j + 1, i));
+          j--;
+        }
+
+        if(j >= 0) {
+          generated.push(createState(arr, `Il primo valore non maggiore di ${key} si trova in indice ${j}. L'inserimento avverrà in indice ${j + 1}.`, i, j + 1, j, i));
+        } else {
+          generated.push(createState(arr, `Tutti gli elementi precedenti erano maggiori di ${key}. L'inserimento avverrà in testa, in indice 0.`, i, 0, -1, i));
+        }
+
+        arr[j + 1] = key;
+        generated.push(createState(arr, `Passaggio ${i} completato: ${key} è stato inserito nella posizione corretta.`, j + 1, j + 1, -1, i + 1));
+      }
+
+      generated.push(createState(arr, 'Ordinamento completato: tutto il vettore è in ordine crescente.', -1, -1, -1, n));
+      return generated;
+    }
+
+    function renderStep(){
+      simCells.innerHTML = '';
+
+      if(steps.length === 0){
+        stepLabel.textContent = '0 / 0';
+        simMessage.textContent = 'Occorre inizializzare una simulazione per visualizzare i passaggi.';
+        return;
+      }
+
+      const current = steps[stepIndex];
+      stepLabel.textContent = `${stepIndex + 1} / ${steps.length}`;
+      simMessage.textContent = current.message;
+
+      current.array.forEach((value, index) => {
+        const item = document.createElement('div');
+        item.className = 'sim-item';
+
+        if(index < current.sortedCount){
+          item.classList.add('sorted');
+        }
+        if(index === current.keyIndex){
+          item.classList.add('key');
+        }
+        if(index === current.insertIndex){
+          item.classList.add('insert');
+        }
+        if(index === current.comparingIndex){
+          item.classList.add('shift');
+        }
+
+        item.innerHTML = `<b>indice ${index}</b><span>${value}</span>`;
+        simCells.appendChild(item);
+      });
+    }
+
+    function initSimulation(values){
+      if(values.length < 2){
+        steps = [];
+        stepIndex = 0;
+        simCells.innerHTML = '';
+        stepLabel.textContent = '0 / 0';
+        simMessage.textContent = 'Occorre inserire almeno due numeri validi separati da virgola.';
+        return;
+      }
+
+      steps = generateInsertionSortSteps(values);
+      stepIndex = 0;
+      renderStep();
+    }
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      const values = parseInput(arrayInput.value);
+      initSimulation(values);
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      if(steps.length === 0){
+        simMessage.textContent = 'Occorre prima inizializzare una simulazione valida.';
+        return;
+      }
+
+      if(stepIndex < steps.length - 1){
+        stepIndex++;
+        renderStep();
+      } else {
+        simMessage.textContent = 'La simulazione ha già raggiunto l’ultimo passaggio.';
+      }
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      arrayInput.value = defaultData.join(', ');
+      initSimulation(defaultData);
+    });
+
+    document.getElementById('quizBtn').addEventListener('click', () => {
+      const answers = ['q1', 'q2', 'q3'];
+      let score = 0;
+
+      answers.forEach(name => {
+        const checked = document.querySelector(`input[name="${name}"]:checked`);
+        if(checked && checked.value === '1'){
+          score++;
+        }
+      });
+
+      const result = document.getElementById('quizResult');
+      if(score === 3){
+        result.textContent = 'Esito: 3 risposte corrette su 3.';
+      } else if(score === 2){
+        result.textContent = 'Esito: 2 risposte corrette su 3.';
+      } else if(score === 1){
+        result.textContent = 'Esito: 1 risposta corretta su 3. Conviene ripassare il procedimento.';
+      } else {
+        result.textContent = 'Esito: nessuna risposta corretta. Conviene rivedere idea chiave, pseudocodice e simulatore.';
+      }
+    });
+
+    arrayInput.value = defaultData.join(', ');
+    initSimulation(defaultData);
+  </script>
+</body>
+</html>
