@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C++ • BUBBLE SORT</title>
+  <style>
+    :root{
+      --bg:#15171b;
+      --bg-soft:#1c2026;
+      --panel:#20252d;
+      --panel-2:#262c36;
+      --line:#343b48;
+      --text:#e8ecf3;
+      --muted:#a8b1c1;
+      --accent:#9b7dff;
+      --accent-2:#c2a8ff;
+      --warn:#ffb86b;
+      --danger:#ff7f7f;
+      --ok:#8fe388;
+      --shadow:0 10px 30px rgba(0,0,0,.28);
+      --mono:"Cascadia Code","Consolas","Courier New",monospace;
+      --sans:"Segoe UI",Arial,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#121418 0%, #171a20 100%);
+      color:var(--text);
+      font-family:var(--sans);
+      line-height:1.65;
+    }
+
+    .page{
+      max-width:1180px;
+      margin:0 auto;
+      padding:28px 22px 60px;
+    }
+
+    .hero{
+      background:linear-gradient(135deg, rgba(155,125,255,.16), rgba(194,168,255,.08));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:34px 28px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::after{
+      content:"BUBBLE";
+      position:absolute;
+      right:-20px;
+      bottom:-18px;
+      font-size:76px;
+      font-weight:900;
+      letter-spacing:3px;
+      color:rgba(255,255,255,.04);
+      pointer-events:none;
+    }
+
+    .eyebrow{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(155,125,255,.15);
+      color:#e4dbff;
+      border:1px solid rgba(155,125,255,.32);
+      font-size:.84rem;
+      font-weight:700;
+      letter-spacing:.4px;
+      margin-bottom:14px;
+    }
+
+    h1{
+      font-size:clamp(2rem, 4vw, 3.6rem);
+      line-height:1.08;
+      margin:0 0 14px;
+      letter-spacing:.2px;
+    }
+
+    .lead{
+      max-width:860px;
+      color:var(--muted);
+      font-size:1.08rem;
+      margin:0;
+    }
+
+    .quick-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+      margin-top:22px;
+    }
+
+    .quick-card{
+      background:rgba(28,32,38,.82);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 16px;
+    }
+
+    .quick-card strong{
+      display:block;
+      margin-bottom:6px;
+      color:var(--accent-2);
+      font-size:.95rem;
+    }
+
+    .quick-card span{
+      color:var(--muted);
+      font-size:.96rem;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:280px 1fr;
+      gap:24px;
+      margin-top:24px;
+      align-items:start;
+    }
+
+    .toc{
+      position:sticky;
+      top:18px;
+      background:var(--bg-soft);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .toc h2{
+      margin:0 0 12px;
+      font-size:1rem;
+    }
+
+    .toc a{
+      display:block;
+      color:var(--muted);
+      text-decoration:none;
+      padding:8px 10px;
+      border-radius:10px;
+      margin-bottom:4px;
+      transition:.2s ease;
+      font-size:.95rem;
+    }
+
+    .toc a:hover{
+      background:rgba(155,125,255,.12);
+      color:var(--text);
+    }
+
+    main section{
+      background:var(--bg-soft);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:28px;
+      box-shadow:var(--shadow);
+      margin-bottom:22px;
+    }
+
+    section h2{
+      font-size:1.7rem;
+      margin-top:0;
+      margin-bottom:12px;
+    }
+
+    section h3{
+      margin-top:24px;
+      margin-bottom:10px;
+      color:#e3dcff;
+      font-size:1.15rem;
+    }
+
+    p{margin:0 0 12px}
+    ul,ol{margin:8px 0 14px 22px}
+    li{margin-bottom:7px}
+    .muted{color:var(--muted)}
+
+    .callout{
+      border-left:4px solid var(--accent);
+      background:rgba(155,125,255,.09);
+      padding:14px 16px;
+      border-radius:0 14px 14px 0;
+      margin:16px 0;
+    }
+
+    .warning{
+      border-left-color:var(--danger);
+      background:rgba(255,127,127,.10);
+    }
+
+    .success{
+      border-left-color:var(--ok);
+      background:rgba(143,227,136,.10);
+    }
+
+    .compare{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .compare .box,
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+    }
+
+    .diagram{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+      margin-top:14px;
+    }
+
+    .cells,
+    .sim-cells,
+    .legend{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .cell,
+    .sim-item{
+      width:86px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+      background:#181c22;
+      text-align:center;
+      transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .cell .idx,
+    .sim-item b{
+      display:block;
+      background:#2a3240;
+      color:#d9d0ff;
+      font-size:.82rem;
+      text-align:center;
+      padding:6px;
+      font-family:var(--mono);
+    }
+
+    .cell .val,
+    .sim-item span{
+      display:block;
+      text-align:center;
+      padding:15px 8px;
+      font-weight:700;
+      font-size:1.05rem;
+    }
+
+    .sim-item.left{
+      border-color:var(--accent);
+      box-shadow:0 0 0 2px rgba(155,125,255,.22);
+      transform:translateY(-2px);
+    }
+
+    .sim-item.right{
+      border-color:#8ec5ff;
+      box-shadow:0 0 0 2px rgba(142,197,255,.16);
+    }
+
+    .sim-item.swapped{
+      border-color:var(--warn);
+      box-shadow:0 0 0 2px rgba(255,184,107,.20);
+    }
+
+    .sim-item.sorted{
+      border-color:var(--ok);
+      box-shadow:0 0 0 2px rgba(143,227,136,.18);
+    }
+
+    .flow{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .flow-step{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .flow-step .num{
+      display:inline-grid;
+      place-items:center;
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      background:rgba(155,125,255,.16);
+      color:#efe9ff;
+      font-weight:800;
+      margin-bottom:10px;
+    }
+
+    pre{
+      margin:16px 0 0;
+      background:#0d1014;
+      border:1px solid #2b3240;
+      border-radius:16px;
+      padding:18px;
+      overflow:auto;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+    }
+
+    code{font-family:var(--mono); font-size:.96rem}
+
+    .table-wrap{overflow:auto}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:12px;
+      background:var(--panel);
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid var(--line);
+    }
+
+    th,td{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
+      text-align:left;
+    }
+
+    th{
+      background:#2f2c44;
+      color:#f2ecff;
+      font-size:.95rem;
+    }
+
+    tr:last-child td{border-bottom:none}
+
+    .mini-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .badge,
+    .legend-badge{
+      display:inline-block;
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(194,168,255,.16);
+      color:#efe7ff;
+      border:1px solid rgba(194,168,255,.24);
+      font-size:.78rem;
+      font-weight:700;
+      margin-bottom:10px;
+    }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:16px;
+      align-items:center;
+    }
+
+    input[type="text"]{
+      background:#11151a;
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      min-width:120px;
+      font:inherit;
+    }
+
+    #arrayInput{min-width:min(100%, 380px)}
+
+    button{
+      background:linear-gradient(180deg,#9b7dff,#8064dd);
+      color:white;
+      border:none;
+      border-radius:12px;
+      padding:10px 14px;
+      font:inherit;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 6px 18px rgba(128,100,221,.28);
+      transition:transform .15s ease, filter .15s ease;
+    }
+
+    button:hover{transform:translateY(-1px); filter:brightness(1.04)}
+    button.secondary{
+      background:#2b3340;
+      box-shadow:none;
+      border:1px solid var(--line);
+    }
+
+    .sim-output{
+      margin-top:14px;
+      background:#12161c;
+      border:1px dashed #3e4757;
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .legend-badge.left{border-color:rgba(155,125,255,.4)}
+    .legend-badge.right{border-color:rgba(142,197,255,.45)}
+    .legend-badge.swapped{border-color:rgba(255,184,107,.45)}
+    .legend-badge.sorted{border-color:rgba(143,227,136,.45)}
+
+    .quiz{
+      display:grid;
+      gap:16px;
+      margin-top:14px;
+    }
+
+    .question{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+    }
+
+    .question h4{margin:0 0 10px; font-size:1rem}
+    .question label{display:block; margin:8px 0; cursor:pointer}
+    .result{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:12px;
+      background:#12161c;
+      border:1px solid var(--line);
+      color:var(--muted);
+    }
+
+    .footer-note{
+      text-align:center;
+      color:#8f99aa;
+      margin-top:10px;
+      font-size:.92rem;
+    }
+
+    .steps-inline{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .pill{
+      background:#232938;
+      border:1px solid var(--line);
+      padding:8px 10px;
+      border-radius:999px;
+      color:#d8dff0;
+      font-size:.92rem;
+    }
+
+    @media (max-width: 980px){
+      .layout{grid-template-columns:1fr}
+      .toc{position:relative; top:auto}
+      .quick-grid, .compare, .mini-grid, .flow{grid-template-columns:1fr 1fr}
+    }
+
+    @media (max-width: 640px){
+      body{font-size:15px}
+      .page{padding:16px 12px 40px}
+      .hero, main section, .toc{padding:20px}
+      .quick-grid, .compare, .mini-grid, .flow{grid-template-columns:1fr}
+      .cell, .sim-item{width:72px}
+      .hero::after{font-size:50px; right:-12px; bottom:-10px}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">C++ • Algoritmi di ordinamento</div>
+      <h1>BUBBLE SORT</h1>
+      <p class="lead">
+        Il <strong>Bubble Sort</strong> è un algoritmo di ordinamento per confronto che lavora esaminando coppie di elementi adiacenti. Quando due valori consecutivi risultano nell'ordine sbagliato, viene eseguito uno scambio. Ripetendo questo procedimento, i valori più grandi vengono progressivamente spinti verso la parte finale del vettore.
+      </p>
+
+      <div class="quick-grid">
+        <div class="quick-card"><strong>Categoria</strong><span>algoritmo di ordinamento per confronto</span></div>
+        <div class="quick-card"><strong>Idea base</strong><span>confronta coppie adiacenti e scambia se necessario</span></div>
+        <div class="quick-card"><strong>Complessità</strong><span><code>O(n²)</code> nel caso medio e peggiore</span></div>
+        <div class="quick-card"><strong>Uso tipico</strong><span>studio del concetto di confronto locale e di scambio ripetuto</span></div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Indice della pagina</h2>
+        <a href="#idea">1. Idea chiave</a>
+        <a href="#problem">2. Problema che risolve</a>
+        <a href="#mental-model">3. Modello mentale</a>
+        <a href="#procedure">4. Procedimento passo-passo</a>
+        <a href="#pseudocode">5. Pseudocodice</a>
+        <a href="#code">6. Codice C++ commentato</a>
+        <a href="#complexity">7. Complessità e prestazioni</a>
+        <a href="#compare">8. Confronto con altri algoritmi</a>
+        <a href="#mistakes">9. Errori tipici</a>
+        <a href="#simulator">10. Simulatore interattivo</a>
+        <a href="#quiz">11. Mini quiz</a>
+        <a href="#summary">12. Riepilogo</a>
+      </aside>
+
+      <main>
+        <section id="idea">
+          <h2>1. Idea chiave</h2>
+          <p>
+            Il Bubble Sort non cerca direttamente il minimo o il massimo in tutto il vettore. Lavora invece su confronti locali: si osservano due elementi vicini e, se risultano invertiti, vengono scambiati.
+          </p>
+          <p>
+            Al termine di ogni passaggio completo, almeno un elemento raggiunge la propria posizione definitiva: nel caso di ordinamento crescente, il più grande tra quelli ancora non sistemati finisce in fondo.
+          </p>
+          <div class="callout">
+            In sostanza: l'algoritmo non costruisce l'ordine “scegliendo” subito il valore corretto, ma corregge progressivamente le inversioni presenti tra elementi adiacenti.
+          </div>
+        </section>
+
+        <section id="problem">
+          <h2>2. Problema che risolve</h2>
+          <p>
+            L'obiettivo è ordinare una sequenza di valori, ad esempio numeri interi, dal più piccolo al più grande.
+          </p>
+          <div class="mini-grid">
+            <div class="card">
+              <span class="badge">Input</span>
+              <p>Un vettore non ordinato, ad esempio <code>{29, 10, 14, 37, 13}</code>.</p>
+            </div>
+            <div class="card">
+              <span class="badge">Output</span>
+              <p>Lo stesso vettore ordinato in modo crescente: <code>{10, 13, 14, 29, 37}</code>.</p>
+            </div>
+          </div>
+          <div class="callout success">
+            È particolarmente utile in fase iniziale perché rende molto visibili il confronto, la condizione di scambio e il significato dell'ordine crescente.
+          </div>
+        </section>
+
+        <section id="mental-model">
+          <h2>3. Modello mentale</h2>
+          <p>
+            Si può immaginare che gli elementi più grandi “risalgano” verso destra ad ogni passaggio, come bolle che salgono verso la superficie. Da qui deriva il nome dell'algoritmo.
+          </p>
+
+          <div class="diagram">
+            <strong>Esempio iniziale:</strong> <code>{29, 10, 14, 37, 13}</code>
+            <div class="cells">
+              <div class="cell"><div class="idx">indice 0</div><div class="val">29</div></div>
+              <div class="cell"><div class="idx">indice 1</div><div class="val">10</div></div>
+              <div class="cell"><div class="idx">indice 2</div><div class="val">14</div></div>
+              <div class="cell"><div class="idx">indice 3</div><div class="val">37</div></div>
+              <div class="cell"><div class="idx">indice 4</div><div class="val">13</div></div>
+            </div>
+          </div>
+
+          <div class="flow">
+            <div class="flow-step">
+              <div class="num">1</div>
+              <strong>Confronta vicini</strong>
+              <p class="muted">Si osservano due elementi consecutivi: indice <code>j</code> e indice <code>j+1</code>.</p>
+            </div>
+            <div class="flow-step">
+              <div class="num">2</div>
+              <strong>Scambia se necessario</strong>
+              <p class="muted">Se l'elemento a sinistra è maggiore di quello a destra, i due valori vengono scambiati.</p>
+            </div>
+            <div class="flow-step">
+              <div class="num">3</div>
+              <strong>Ripeti il passaggio</strong>
+              <p class="muted">Al termine del passaggio, l'elemento più grande della parte analizzata raggiunge il fondo.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="procedure">
+          <h2>4. Procedimento passo-passo</h2>
+          <p>Si osservi il comportamento dell'algoritmo sul vettore <code>{29, 10, 14, 37, 13}</code>.</p>
+
+          <h3>Passaggio 1</h3>
+          <p>Si confrontano <code>29</code> e <code>10</code>: essendo nell'ordine sbagliato, si scambiano. Poi si confrontano <code>29</code> e <code>14</code>: nuovo scambio. Il confronto tra <code>29</code> e <code>37</code> non richiede interventi. Infine si confrontano <code>37</code> e <code>13</code>: si scambiano.</p>
+          <p><strong>Risultato:</strong> <code>{10, 14, 29, 13, 37}</code></p>
+          <p>A questo punto <code>37</code> è sicuramente in posizione definitiva.</p>
+
+          <h3>Passaggio 2</h3>
+          <p>Si riparte dall'inizio, ma non serve più arrivare fino all'ultimo elemento già sistemato. I confronti portano allo scambio tra <code>29</code> e <code>13</code>.</p>
+          <p><strong>Risultato:</strong> <code>{10, 14, 13, 29, 37}</code></p>
+          <p>Ora anche <code>29</code> è in posizione definitiva.</p>
+
+          <h3>Passaggio 3</h3>
+          <p>Si confrontano le coppie ancora utili e si esegue lo scambio tra <code>14</code> e <code>13</code>.</p>
+          <p><strong>Risultato:</strong> <code>{10, 13, 14, 29, 37}</code></p>
+
+          <h3>Passaggio 4</h3>
+          <p>Se si usa la versione più semplice, il passaggio avviene comunque, anche se non ci sono scambi. Se invece si usa una variabile booleana che registra la presenza di scambi, l'algoritmo può terminare in anticipo appena il vettore risulta già ordinato.</p>
+
+          <div class="steps-inline">
+            <span class="pill">Ogni confronto riguarda elementi adiacenti</span>
+            <span class="pill">Ad ogni passaggio si fissa un elemento in fondo</span>
+            <span class="pill">L'ottimizzazione con <code>swapped</code> consente uscita anticipata</span>
+          </div>
+
+          <div class="callout">
+            Alla fine dell'iterazione esterna di indice <code>i</code>, la porzione finale del vettore, lunga <code>i + 1</code>, risulta già ordinata e contiene gli elementi più grandi nelle loro posizioni definitive.
+          </div>
+        </section>
+
+        <section id="pseudocode">
+          <h2>5. Pseudocodice</h2>
+          <p>Di seguito è riportata una versione didattica con ottimizzazione di uscita anticipata.</p>
+<pre><code>per i da 0 a n - 2
+    swapped = falso
+
+    per j da 0 a n - 2 - i
+        se vettore[j] &gt; vettore[j + 1]
+            scambia vettore[j] con vettore[j + 1]
+            swapped = vero
+        fine se
+    fine per
+
+    se swapped è falso
+        interrompi l'algoritmo
+    fine se
+fine per</code></pre>
+          <div class="callout">
+            La variabile <code>swapped</code> segnala se durante il passaggio è avvenuto almeno uno scambio. Se non si verifica alcuno scambio, il vettore risulta già ordinato e non serve proseguire.
+          </div>
+        </section>
+
+        <section id="code">
+          <h2>6. Codice C++ commentato</h2>
+          <p>Di seguito è riportata una versione chiara e didattica dell'algoritmo, applicata a un <code>vector&lt;int&gt;</code>.</p>
+<pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+using namespace std;
+
+int main()
+{
+    vector&lt;int&gt; numbers = {29, 10, 14, 37, 13};
+    int n = numbers.size();
+
+    // Outer loop: each pass moves the largest remaining value to the end
+    for (int i = 0; i &lt; n - 1; i++)
+    {
+        bool swapped = false;
+
+        // Inner loop: compares adjacent elements in the unsorted part
+        for (int j = 0; j &lt; n - 1 - i; j++)
+        {
+            if (numbers[j] &gt; numbers[j + 1])
+            {
+                int temp = numbers[j];
+                numbers[j] = numbers[j + 1];
+                numbers[j + 1] = temp;
+                swapped = true;
+            }
+        }
+
+        // If no swap happened, the vector is already sorted
+        if (!swapped)
+        {
+            break;
+        }
+    }
+
+    cout &lt;&lt; "Sorted vector: ";
+    for (int value : numbers)
+    {
+        cout &lt;&lt; value &lt;&lt; " ";
+    }
+
+    return 0;
+}</code></pre>
+
+          <div class="mini-grid">
+            <div class="card">
+              <span class="badge">Ciclo esterno</span>
+              <p>Conta i passaggi completi e riduce progressivamente la parte del vettore ancora da controllare.</p>
+            </div>
+            <div class="card">
+              <span class="badge">Ciclo interno</span>
+              <p>Confronta coppie consecutive e decide se eseguire oppure no lo scambio.</p>
+            </div>
+          </div>
+
+          <h3>Lettura delle variabili principali</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Variabile</th>
+                  <th>Ruolo</th>
+                  <th>Osservazione didattica</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>i</code></td>
+                  <td>Conta il numero di passaggi effettuati.</td>
+                  <td>Dopo ogni passaggio cresce la parte finale già sistemata del vettore.</td>
+                </tr>
+                <tr>
+                  <td><code>j</code></td>
+                  <td>Scorre la parte ancora non ordinata del vettore.</td>
+                  <td>Serve per confrontare l'elemento in indice <code>j</code> con quello in indice <code>j + 1</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>swapped</code></td>
+                  <td>Registra se nel passaggio corrente è avvenuto almeno uno scambio.</td>
+                  <td>Permette di interrompere l'algoritmo quando il vettore è già ordinato.</td>
+                </tr>
+                <tr>
+                  <td><code>temp</code></td>
+                  <td>Variabile di appoggio per lo scambio.</td>
+                  <td>Evita la perdita del valore contenuto in <code>numbers[j]</code>.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="complexity">
+          <h2>7. Complessità e prestazioni</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Aspetto</th>
+                  <th>Valore</th>
+                  <th>Significato</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Tempo nel caso migliore</td>
+                  <td><code>O(n)</code></td>
+                  <td>Con la variabile <code>swapped</code>, un vettore già ordinato richiede un solo passaggio senza scambi.</td>
+                </tr>
+                <tr>
+                  <td>Tempo nel caso medio</td>
+                  <td><code>O(n²)</code></td>
+                  <td>Il numero complessivo di confronti cresce quadraticamente.</td>
+                </tr>
+                <tr>
+                  <td>Tempo nel caso peggiore</td>
+                  <td><code>O(n²)</code></td>
+                  <td>Quando molti elementi sono lontani dalla posizione corretta, servono molti passaggi e molti scambi.</td>
+                </tr>
+                <tr>
+                  <td>Numero massimo di confronti</td>
+                  <td><code>n(n-1)/2</code></td>
+                  <td>Dipende dalla somma dei confronti eseguiti nei passaggi successivi.</td>
+                </tr>
+                <tr>
+                  <td>Numero di scambi</td>
+                  <td>Può essere elevato</td>
+                  <td>Ogni inversione locale viene corretta tramite uno scambio immediato.</td>
+                </tr>
+                <tr>
+                  <td>Spazio extra</td>
+                  <td><code>O(1)</code></td>
+                  <td>Usa solo poche variabili aggiuntive.</td>
+                </tr>
+                <tr>
+                  <td>Stabilità</td>
+                  <td>Sì</td>
+                  <td>Se si scambia solo quando <code>a[j] &gt; a[j+1]</code>, l'ordine relativo di elementi uguali viene preservato.</td>
+                </tr>
+                <tr>
+                  <td>Adattività</td>
+                  <td>Parziale</td>
+                  <td>Con l'ottimizzazione <code>swapped</code> può fermarsi prima se il vettore è già ordinato o quasi ordinato.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout">
+            Il costo quadratico deriva dal fatto che, nel caso generale, il ciclo interno esegue circa <code>n-1</code> confronti nel primo passaggio, <code>n-2</code> nel secondo, e così via. La somma <code>(n-1) + (n-2) + ... + 1</code> vale <code>n(n-1)/2</code>.
+          </div>
+
+          <div class="callout warning">
+            Il Bubble Sort è utile per comprendere il meccanismo degli scambi locali, ma in applicazioni reali non rappresenta una scelta efficiente per insiemi di dati estesi.
+          </div>
+        </section>
+
+        <section id="compare">
+          <h2>8. Confronto con altri algoritmi</h2>
+          <p>Conviene confrontarlo con altri algoritmi elementari per cogliere differenze reali di comportamento, non solo di risultato finale.</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Algoritmo</th>
+                  <th>Idea principale</th>
+                  <th>Punto forte</th>
+                  <th>Limite principale</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Bubble Sort</td>
+                  <td>Corregge inversioni tra elementi adiacenti</td>
+                  <td>Molto intuitivo dal punto di vista visivo</td>
+                  <td>Richiede molti scambi</td>
+                </tr>
+                <tr>
+                  <td>Selection Sort</td>
+                  <td>Cerca il minimo e lo porta davanti</td>
+                  <td>Effettua pochi scambi</td>
+                  <td>Non sfrutta il fatto che il vettore sia già quasi ordinato</td>
+                </tr>
+                <tr>
+                  <td>Insertion Sort</td>
+                  <td>Inserisce ogni elemento nella posizione corretta della parte già ordinata</td>
+                  <td>Molto efficace su dati piccoli o quasi ordinati</td>
+                  <td>Resta quadratico nel caso peggiore</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="compare">
+            <div class="box">
+              <h3>Quando è utile studiarlo</h3>
+              <p>Quando si vuole far comprendere in modo diretto il ruolo del confronto, della condizione e dello scambio tra due elementi adiacenti.</p>
+            </div>
+            <div class="box">
+              <h3>Quale confronto didattico è più utile</h3>
+              <p>Confrontarlo con il Selection Sort è molto istruttivo: entrambi sono quadratici, ma il Bubble Sort scambia spesso, mentre il Selection Sort seleziona prima e scambia dopo.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="mistakes">
+          <h2>9. Errori tipici</h2>
+
+          <div class="card">
+            <h3>Errore 1 • Confondere gli indici del confronto</h3>
+            <p>Nel Bubble Sort si confrontano sempre <code>j</code> e <code>j + 1</code>. Non si confronta l'elemento corrente con un minimo o con un massimo globale.</p>
+          </div>
+
+          <div class="card">
+            <h3>Errore 2 • Sbagliare il limite del ciclo interno</h3>
+            <p>Il limite corretto dipende dal numero di passaggi già completati. Scrivere <code>j &lt; n - 1 - i</code> evita di ricontrollare inutilmente la parte finale già ordinata.</p>
+          </div>
+
+          <div class="card">
+            <h3>Errore 3 • Dimenticare di reimpostare <code>swapped</code> a <code>false</code></h3>
+            <p>La variabile deve essere azzerata all'inizio di ogni passaggio esterno. In caso contrario, l'uscita anticipata non funziona correttamente.</p>
+          </div>
+
+          <div class="card">
+            <h3>Errore 4 • Pensare che ogni passaggio ordini tutto il vettore</h3>
+            <p>Ogni passaggio garantisce solo che il massimo della parte analizzata finisca in fondo. L'ordinamento completo richiede più iterazioni.</p>
+          </div>
+        </section>
+
+        <section id="simulator">
+          <h2>10. Simulatore interattivo</h2>
+          <p>
+            È possibile inserire alcuni numeri separati da virgola e osservare il Bubble Sort un confronto alla volta.
+          </p>
+
+          <div class="card">
+            <div class="controls">
+              <input id="arrayInput" type="text" placeholder="Esempio: 29, 10, 14, 37, 13" />
+              <button id="startBtn">Inizializza simulazione</button>
+              <button id="nextBtn">Passo successivo</button>
+              <button id="resetBtn" class="secondary">Carica esempio</button>
+            </div>
+
+            <div class="legend">
+              <span class="legend-badge left">elemento sinistro della coppia</span>
+              <span class="legend-badge right">elemento destro della coppia</span>
+              <span class="legend-badge swapped">coppia appena scambiata</span>
+              <span class="legend-badge sorted">parte finale già ordinata</span>
+            </div>
+
+            <div class="sim-output">
+              <div><strong>Step corrente:</strong> <span id="stepLabel">0 / 0</span></div>
+              <div class="sim-cells" id="simCells"></div>
+              <p class="footer-note" id="simMessage">Occorre inizializzare una simulazione per visualizzare i passaggi.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="quiz">
+          <h2>11. Mini quiz</h2>
+          <p>La sezione consente di verificare se i concetti principali risultano davvero chiari.</p>
+
+          <div class="quiz">
+            <div class="question">
+              <h4>1. Quali elementi confronta il Bubble Sort?</h4>
+              <label><input type="radio" name="q1" value="1"> Elementi adiacenti del vettore</label>
+              <label><input type="radio" name="q1" value="0"> Sempre il primo e l'ultimo elemento</label>
+              <label><input type="radio" name="q1" value="0"> Il minimo con il massimo del vettore</label>
+            </div>
+
+            <div class="question">
+              <h4>2. Cosa garantisce un passaggio completo del Bubble Sort?</h4>
+              <label><input type="radio" name="q2" value="1"> Che il massimo della parte analizzata arrivi in fondo</label>
+              <label><input type="radio" name="q2" value="0"> Che tutto il vettore sia sicuramente ordinato</label>
+              <label><input type="radio" name="q2" value="0"> Che il minimo finisca in prima posizione</label>
+            </div>
+
+            <div class="question">
+              <h4>3. A cosa serve la variabile <code>swapped</code>?</h4>
+              <label><input type="radio" name="q3" value="0"> A salvare l'indice del massimo</label>
+              <label><input type="radio" name="q3" value="1"> A capire se nel passaggio è avvenuto almeno uno scambio</label>
+              <label><input type="radio" name="q3" value="0"> A contare il numero totale degli elementi</label>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button id="quizBtn">Correggi quiz</button>
+          </div>
+          <div class="result" id="quizResult">Nessuna risposta ancora corretta.</div>
+        </section>
+
+        <section id="summary">
+          <h2>12. Riepilogo</h2>
+          <ul>
+            <li>Il Bubble Sort è un algoritmo di ordinamento per confronto.</li>
+            <li>Confronta elementi adiacenti ed esegue uno scambio quando sono nell'ordine sbagliato.</li>
+            <li>Al termine di ogni passaggio il valore massimo della parte analizzata si trova in fondo.</li>
+            <li>Lavora in-place e usa pochissima memoria aggiuntiva.</li>
+            <li>Con l'ottimizzazione <code>swapped</code> può terminare prima in caso di vettore già ordinato.</li>
+            <li>Nel caso medio e peggiore ha complessità temporale <code>O(n²)</code>.</li>
+          </ul>
+
+          <div class="callout success">
+            Quando il comportamento del Bubble Sort risulta chiaro, diventa più semplice comprendere il significato di stabilità, adattività e costo degli scambi, e quindi confrontare in modo più maturo ordinamenti diversi.
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const defaultData = [29, 10, 14, 37, 13];
+    const arrayInput = document.getElementById('arrayInput');
+    const simCells = document.getElementById('simCells');
+    const simMessage = document.getElementById('simMessage');
+    const stepLabel = document.getElementById('stepLabel');
+
+    let steps = [];
+    let stepIndex = 0;
+
+    function parseInput(raw){
+      return raw
+        .split(',')
+        .map(item => item.trim())
+        .filter(item => item !== '')
+        .map(Number)
+        .filter(item => !Number.isNaN(item));
+    }
+
+    function createState(array, message, leftIndex = -1, rightIndex = -1, sortedFrom = array.length, swappedPair = []){
+      return {
+        array: [...array],
+        message,
+        leftIndex,
+        rightIndex,
+        sortedFrom,
+        swappedPair: [...swappedPair]
+      };
+    }
+
+    function generateBubbleSortSteps(source){
+      const arr = [...source];
+      const generated = [];
+      const n = arr.length;
+
+      generated.push(createState(arr, 'Configurazione iniziale del vettore.', -1, -1, n, []));
+
+      for(let i = 0; i < n - 1; i++){
+        let swapped = false;
+        generated.push(createState(arr, `Inizio passaggio ${i + 1}: si confrontano le coppie adiacenti fino all'indice ${n - 2 - i}.`, -1, -1, n - i, []));
+
+        for(let j = 0; j < n - 1 - i; j++){
+          generated.push(createState(arr, `Confronto tra gli elementi in indice ${j} e ${j + 1}.`, j, j + 1, n - i, []));
+
+          if(arr[j] > arr[j + 1]){
+            const temp = arr[j];
+            arr[j] = arr[j + 1];
+            arr[j + 1] = temp;
+            swapped = true;
+            generated.push(createState(arr, `Scambio effettuato: i valori in indice ${j} e ${j + 1} erano nell'ordine sbagliato.`, j, j + 1, n - i, [j, j + 1]));
+          } else {
+            generated.push(createState(arr, 'Nessuno scambio necessario: la coppia è già nell\'ordine corretto.', j, j + 1, n - i, []));
+          }
+        }
+
+        generated.push(createState(arr, `Fine passaggio ${i + 1}: l'elemento in indice ${n - 1 - i} è ora in posizione definitiva.`, -1, -1, n - 1 - i, []));
+
+        if(!swapped){
+          generated.push(createState(arr, 'Nessuno scambio nell\'intero passaggio: il vettore risulta già ordinato, quindi l\'algoritmo termina in anticipo.', -1, -1, 0, []));
+          break;
+        }
+      }
+
+      generated.push(createState(arr, 'Ordinamento completato: tutto il vettore è in ordine crescente.', -1, -1, 0, []));
+      return generated;
+    }
+
+    function renderStep(){
+      simCells.innerHTML = '';
+
+      if(steps.length === 0){
+        stepLabel.textContent = '0 / 0';
+        simMessage.textContent = 'Occorre inizializzare una simulazione per visualizzare i passaggi.';
+        return;
+      }
+
+      const current = steps[stepIndex];
+      stepLabel.textContent = `${stepIndex + 1} / ${steps.length}`;
+      simMessage.textContent = current.message;
+
+      current.array.forEach((value, index) => {
+        const item = document.createElement('div');
+        item.className = 'sim-item';
+
+        if(index >= current.sortedFrom){
+          item.classList.add('sorted');
+        }
+        if(index === current.leftIndex){
+          item.classList.add('left');
+        }
+        if(index === current.rightIndex){
+          item.classList.add('right');
+        }
+        if(current.swappedPair.includes(index)){
+          item.classList.add('swapped');
+        }
+
+        item.innerHTML = `<b>indice ${index}</b><span>${value}</span>`;
+        simCells.appendChild(item);
+      });
+    }
+
+    function initSimulation(values){
+      if(values.length < 2){
+        steps = [];
+        stepIndex = 0;
+        simCells.innerHTML = '';
+        stepLabel.textContent = '0 / 0';
+        simMessage.textContent = 'Occorre inserire almeno due numeri validi separati da virgola.';
+        return;
+      }
+
+      steps = generateBubbleSortSteps(values);
+      stepIndex = 0;
+      renderStep();
+    }
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      const values = parseInput(arrayInput.value);
+      initSimulation(values);
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      if(steps.length === 0){
+        simMessage.textContent = 'Occorre prima inizializzare una simulazione valida.';
+        return;
+      }
+
+      if(stepIndex < steps.length - 1){
+        stepIndex++;
+        renderStep();
+      } else {
+        simMessage.textContent = 'La simulazione ha già raggiunto l’ultimo passaggio.';
+      }
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      arrayInput.value = defaultData.join(', ');
+      initSimulation(defaultData);
+    });
+
+    document.getElementById('quizBtn').addEventListener('click', () => {
+      const answers = ['q1', 'q2', 'q3'];
+      let score = 0;
+
+      answers.forEach(name => {
+        const checked = document.querySelector(`input[name="${name}"]:checked`);
+        if(checked && checked.value === '1'){
+          score++;
+        }
+      });
+
+      const result = document.getElementById('quizResult');
+      if(score === 3){
+        result.textContent = 'Esito: 3 risposte corrette su 3.';
+      } else if(score === 2){
+        result.textContent = 'Esito: 2 risposte corrette su 3.';
+      } else if(score === 1){
+        result.textContent = 'Esito: 1 risposta corretta su 3. Conviene ripassare il procedimento.';
+      } else {
+        result.textContent = 'Esito: nessuna risposta corretta. Conviene rivedere idea chiave, pseudocodice e simulatore.';
+      }
+    });
+
+    arrayInput.value = defaultData.join(', ');
+    initSimulation(defaultData);
+  </script>
+</body>
+</html>
